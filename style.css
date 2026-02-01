@@ -210,6 +210,14 @@ select option {
     margin: 5px 0;
 }
 
+.version {
+    margin-top: 20px;
+    text-align: center;
+    color: var(--border-color);
+    font-size: 11px;
+    opacity: 0.7;
+}
+
 @media (max-width: 600px) {
     body {
         padding: 10px;
