@@ -31,7 +31,20 @@ class SudokuGame {
         
         this.generateSudoku();
         this.renderBoard();
+        this.updateInfoText();
         this.showMessage('', '');
+    }
+
+    updateInfoText() {
+        const infoText = document.getElementById('info-text');
+        const infoRules = document.getElementById('info-rules');
+        if (this.difficulty === 'supereasy') {
+            infoText.textContent = 'Fill in the empty cells with numbers 1-4';
+            infoRules.textContent = 'Each row, column, and 2x2 box must contain all digits 1-4';
+        } else {
+            infoText.textContent = 'Fill in the empty cells with numbers 1-9';
+            infoRules.textContent = 'Each row, column, and 3x3 box must contain all digits 1-9';
+        }
     }
 
     generateSudoku() {
@@ -44,7 +57,7 @@ class SudokuGame {
         
         // Remove numbers based on difficulty
         const cellsToRemove = {
-            'supereasy': 8,
+            'supereasy': 6,
             'easy': 35,
             'medium': 45,
             'hard': 55
@@ -256,16 +269,3 @@ class SudokuGame {
 
 // Initialize the game
 new SudokuGame();
-
-// Update info text based on difficulty
-document.getElementById('difficulty').addEventListener('change', (e) => {
-    const infoText = document.getElementById('info-text');
-    const infoRules = document.getElementById('info-rules');
-    if (e.target.value === 'supereasy') {
-        infoText.textContent = 'Fill in the empty cells with numbers 1-4';
-        infoRules.textContent = 'Each row, column, and 2x2 box must contain all digits 1-4';
-    } else {
-        infoText.textContent = 'Fill in the empty cells with numbers 1-9';
-        infoRules.textContent = 'Each row, column, and 3x3 box must contain all digits 1-9';
-    }
-});
