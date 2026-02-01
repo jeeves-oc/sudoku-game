@@ -1,0 +1,4 @@
+# Code owners - automatically request review from these users/teams
+# Requires at least one approval before merging to main
+
+* @theadmin

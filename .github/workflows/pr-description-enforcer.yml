@@ -1,0 +1,24 @@
+name: PR Description Enforcer
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+jobs:
+  enforce-description:
+    name: Check PR Description
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR has description
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            const body = pr.body || '';
+            
+            if (body.trim().length < 20) {
+              core.setFailed('❌ PR description is too short. Please provide a meaningful description (at least 20 characters).');
+            } else {
+              console.log('✅ PR description looks good!');
+            }
