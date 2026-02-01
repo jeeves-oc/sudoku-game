@@ -1,3 +1,23 @@
+:root {
+    /* Dark theme colors */
+    --background-gradient-start: #121212;
+    --background-gradient-end: #1e1e1e;
+    --card-background: #222222;
+    --primary-button: #4caf50;
+    --primary-button-hover: #43a047;
+    --secondary-button: #03a9f4;
+    --secondary-button-hover: #0288d1;
+    --hint-button: #ff9800;
+    --hint-button-hover: #f57c00;
+    --board-cell-empty: #2a2a2a;
+    --board-cell-fixed: #333333;
+    --text-primary: #ffffff;
+    --text-secondary: #b0bec5;
+    --text-highlight: #ff5722;
+    --border-color: #424242;
+    --accent-color: #667eea;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -6,7 +26,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--background-gradient-start) 0%, var(--background-gradient-end) 100%);
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -15,16 +35,17 @@ body {
 }
 
 .container {
-    background: white;
+    background: var(--card-background);
     border-radius: 20px;
     padding: 40px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     max-width: 600px;
+    border: 1px solid var(--border-color);
 }
 
 h1 {
     text-align: center;
-    color: #667eea;
+    color: var(--accent-color);
     margin-bottom: 30px;
     font-size: 2.5em;
 }
@@ -48,44 +69,49 @@ h1 {
 }
 
 .btn-primary {
-    background: #667eea;
+    background: var(--primary-button);
     color: white;
 }
 
 .btn-primary:hover {
-    background: #5568d3;
+    background: var(--primary-button-hover);
     transform: translateY(-2px);
 }
 
 .btn-secondary {
-    background: #48bb78;
+    background: var(--secondary-button);
     color: white;
 }
 
 .btn-secondary:hover {
-    background: #38a169;
+    background: var(--secondary-button-hover);
     transform: translateY(-2px);
 }
 
 .btn-hint {
-    background: #f6ad55;
+    background: var(--hint-button);
     color: white;
 }
 
 .btn-hint:hover {
-    background: #ed8936;
+    background: var(--hint-button-hover);
     transform: translateY(-2px);
 }
 
 select {
     padding: 10px 15px;
-    border: 2px solid #667eea;
+    border: 2px solid var(--accent-color);
     border-radius: 8px;
     font-size: 16px;
     cursor: pointer;
-    background: white;
+    background: var(--board-cell-empty);
     font-weight: 600;
-    color: #667eea;
+    color: var(--text-primary);
+}
+
+select option {
+    background: var(--card-background);
+    color: var(--text-primary);
 }
 
 .message {
@@ -101,20 +127,22 @@ select {
 }
 
 .message.success {
-    background: #c6f6d5;
-    color: #22543d;
+    background: rgba(76, 175, 80, 0.2);
+    color: var(--primary-button);
+    border: 1px solid var(--primary-button);
 }
 
 .message.error {
-    background: #fed7d7;
-    color: #742a2a;
+    background: rgba(255, 87, 34, 0.2);
+    color: var(--text-highlight);
+    border: 1px solid var(--text-highlight);
 }
 
 .board {
     display: grid;
     grid-template-columns: repeat(9, 1fr);
     gap: 0;
-    background: #2d3748;
+    background: var(--border-color);
     padding: 2px;
     border-radius: 8px;
     margin: 0 auto;
@@ -123,8 +151,8 @@ select {
 
 .cell {
     aspect-ratio: 1;
-    background: white;
-    border: 1px solid #cbd5e0;
+    background: var(--board-cell-empty);
+    border: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -141,40 +169,40 @@ select {
     font-size: 20px;
     font-weight: 600;
     background: transparent;
-    color: #2d3748;
+    color: var(--text-primary);
 }
 
 .cell input:focus {
     outline: none;
-    background: #edf2f7;
+    background: rgba(102, 126, 234, 0.1);
 }
 
 .cell.fixed {
-    background: #e2e8f0;
+    background: var(--board-cell-fixed);
 }
 
 .cell.fixed input {
-    color: #1a202c;
+    color: var(--text-secondary);
     font-weight: 700;
 }
 
 .cell.error {
-    background: #fed7d7;
+    background: rgba(255, 87, 34, 0.2);
 }
 
 .cell:nth-child(3n) {
-    border-right: 3px solid #2d3748;
+    border-right: 3px solid var(--accent-color);
 }
 
 .cell:nth-child(n+19):nth-child(-n+27),
 .cell:nth-child(n+46):nth-child(-n+54) {
-    border-bottom: 3px solid #2d3748;
+    border-bottom: 3px solid var(--accent-color);
 }
 
 .info {
     margin-top: 30px;
     text-align: center;
-    color: #718096;
+    color: var(--text-secondary);
     font-size: 14px;
 }
 
