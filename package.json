@@ -1,0 +1,27 @@
+{
+  "name": "sudoku-game",
+  "version": "1.0.0",
+  "description": "A beautiful, interactive Sudoku game built with vanilla JavaScript.",
+  "main": "sudoku.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeeves-oc/sudoku-game.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/jeeves-oc/sudoku-game/issues"
+  },
+  "homepage": "https://github.com/jeeves-oc/sudoku-game#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.58.1",
+    "http-server": "^14.1.1"
+  }
+}
