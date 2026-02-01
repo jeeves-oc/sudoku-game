@@ -1,8 +1,10 @@
 class SudokuGame {
     constructor() {
-        this.board = Array(9).fill(null).map(() => Array(9).fill(0));
-        this.solution = Array(9).fill(null).map(() => Array(9).fill(0));
+        this.board = [];
+        this.solution = [];
         this.difficulty = 'medium';
+        this.size = 9;
+        this.boxSize = 3;
         this.init();
     }
 
@@ -18,6 +20,15 @@ class SudokuGame {
     }
 
     newGame() {
+        // Set grid size based on difficulty
+        if (this.difficulty === 'supereasy') {
+            this.size = 4;
+            this.boxSize = 2;
+        } else {
+            this.size = 9;
+            this.boxSize = 3;
+        }
+        
         this.generateSudoku();
         this.renderBoard();
         this.showMessage('', '');
@@ -25,7 +36,7 @@ class SudokuGame {
 
     generateSudoku() {
         // Create a solved sudoku
-        this.board = Array(9).fill(null).map(() => Array(9).fill(0));
+        this.board = Array(this.size).fill(null).map(() => Array(this.size).fill(0));
         this.fillBoard(0, 0);
         
         // Store the solution
@@ -33,6 +44,7 @@ class SudokuGame {
         
         // Remove numbers based on difficulty
         const cellsToRemove = {
+            'supereasy': 8,
             'easy': 35,
             'medium': 45,
             'hard': 55
@@ -42,10 +54,10 @@ class SudokuGame {
     }
 
     fillBoard(row, col) {
-        if (row === 9) return true;
-        if (col === 9) return this.fillBoard(row + 1, 0);
+        if (row === this.size) return true;
+        if (col === this.size) return this.fillBoard(row + 1, 0);
         
-        const numbers = this.shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        const numbers = this.shuffle(Array.from({length: this.size}, (_, i) => i + 1));
         
         for (let num of numbers) {
             if (this.isValid(row, col, num)) {
@@ -60,20 +72,20 @@ class SudokuGame {
 
     isValid(row, col, num) {
         // Check row
-        for (let x = 0; x < 9; x++) {
+        for (let x = 0; x < this.size; x++) {
             if (this.board[row][x] === num) return false;
         }
         
         // Check column
-        for (let x = 0; x < 9; x++) {
+        for (let x = 0; x < this.size; x++) {
             if (this.board[x][col] === num) return false;
         }
         
-        // Check 3x3 box
-        const startRow = row - row % 3;
-        const startCol = col - col % 3;
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 3; j++) {
+        // Check box
+        const startRow = row - row % this.boxSize;
+        const startCol = col - col % this.boxSize;
+        for (let i = 0; i < this.boxSize; i++) {
+            for (let j = 0; j < this.boxSize; j++) {
                 if (this.board[i + startRow][j + startCol] === num) return false;
             }
         }
@@ -84,8 +96,8 @@ class SudokuGame {
     removeNumbers(count) {
         let removed = 0;
         while (removed < count) {
-            const row = Math.floor(Math.random() * 9);
-            const col = Math.floor(Math.random() * 9);
+            const row = Math.floor(Math.random() * this.size);
+            const col = Math.floor(Math.random() * this.size);
             if (this.board[row][col] !== 0) {
                 this.board[row][col] = 0;
                 removed++;
@@ -105,17 +117,26 @@ class SudokuGame {
     renderBoard() {
         const boardElement = document.getElementById('sudoku-board');
         boardElement.innerHTML = '';
+        boardElement.style.gridTemplateColumns = `repeat(${this.size}, 1fr)`;
         
-        for (let row = 0; row < 9; row++) {
-            for (let col = 0; col < 9; col++) {
+        for (let row = 0; row < this.size; row++) {
+            for (let col = 0; col < this.size; col++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
+                
+                // Add box border classes
+                if ((col + 1) % this.boxSize === 0 && col !== this.size - 1) {
+                    cell.classList.add('box-right');
+                }
+                if ((row + 1) % this.boxSize === 0 && row !== this.size - 1) {
+                    cell.classList.add('box-bottom');
+                }
                 
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.maxLength = 1;
                 input.inputMode = 'numeric';
-                input.pattern = '[1-9]';
+                input.pattern = `[1-${this.size}]`;
                 input.dataset.row = row;
                 input.dataset.col = col;
                 
@@ -136,13 +157,13 @@ class SudokuGame {
 
     handleInput(e) {
         const value = e.target.value;
-        // Only allow single digits 1-9
-        if (value && !/^[1-9]$/.test(value)) {
+        // Only allow valid digits for current grid size
+        const validPattern = new RegExp(`^[1-${this.size}]$`);
+        if (value && !validPattern.test(value)) {
             e.target.value = '';
             return;
         }
-        // Prevent any non-numeric input
-        e.target.value = value.replace(/[^1-9]/g, '');
+        e.target.value = value.replace(new RegExp(`[^1-${this.size}]`, 'g'), '');
     }
 
     handleKeydown(e) {
@@ -158,7 +179,7 @@ class SudokuGame {
                 e.preventDefault();
                 break;
             case 'ArrowDown':
-                newRow = Math.min(8, row + 1);
+                newRow = Math.min(this.size - 1, row + 1);
                 e.preventDefault();
                 break;
             case 'ArrowLeft':
@@ -166,7 +187,7 @@ class SudokuGame {
                 e.preventDefault();
                 break;
             case 'ArrowRight':
-                newCol = Math.min(8, col + 1);
+                newCol = Math.min(this.size - 1, col + 1);
                 e.preventDefault();
                 break;
             default:
@@ -235,3 +256,16 @@ class SudokuGame {
 
 // Initialize the game
 new SudokuGame();
+
+// Update info text based on difficulty
+document.getElementById('difficulty').addEventListener('change', (e) => {
+    const infoText = document.getElementById('info-text');
+    const infoRules = document.getElementById('info-rules');
+    if (e.target.value === 'supereasy') {
+        infoText.textContent = 'Fill in the empty cells with numbers 1-4';
+        infoRules.textContent = 'Each row, column, and 2x2 box must contain all digits 1-4';
+    } else {
+        infoText.textContent = 'Fill in the empty cells with numbers 1-9';
+        infoRules.textContent = 'Each row, column, and 3x3 box must contain all digits 1-9';
+    }
+});

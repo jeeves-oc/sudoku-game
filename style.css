@@ -190,13 +190,12 @@ select option {
     background: rgba(255, 87, 34, 0.2);
 }
 
-.cell:nth-child(3n) {
-    border-right: 3px solid var(--accent-color);
+.cell.box-right {
+    border-right: 3px solid var(--accent-color) !important;
 }
 
-.cell:nth-child(n+19):nth-child(-n+27),
-.cell:nth-child(n+46):nth-child(-n+54) {
-    border-bottom: 3px solid var(--accent-color);
+.cell.box-bottom {
+    border-bottom: 3px solid var(--accent-color) !important;
 }
 
 .info {
