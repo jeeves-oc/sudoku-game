@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Sudoku</h1>
+        <div class="controls">
+            <button id="newGame" class="btn btn-primary">New Game</button>
+            <button id="checkSolution" class="btn btn-secondary">Check Solution</button>
+            <button id="solve" class="btn btn-hint">Show Solution</button>
+            <select id="difficulty">
+                <option value="easy">Easy</option>
+                <option value="medium" selected>Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+        </div>
+        <div id="message" class="message"></div>
+        <div id="sudoku-board" class="board"></div>
+        <div class="info">
+            <p>Fill in the empty cells with numbers 1-9</p>
+            <p>Each row, column, and 3x3 box must contain all digits 1-9</p>
+        </div>
+    </div>
+    <script src="sudoku.js"></script>
+</body>
+</html>
