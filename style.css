@@ -183,19 +183,44 @@ select {
 }
 
 @media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+    
     .container {
-        padding: 20px;
+        padding: 15px;
+        width: 100%;
     }
     
     h1 {
-        font-size: 2em;
+        font-size: 1.8em;
+        margin-bottom: 20px;
+    }
+    
+    .controls {
+        gap: 8px;
+    }
+    
+    .btn {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+    
+    select {
+        padding: 8px 12px;
+        font-size: 14px;
     }
     
     .board {
         max-width: 100%;
+        width: 100%;
     }
     
     .cell input {
-        font-size: 16px;
+        font-size: 18px;
+    }
+    
+    .info {
+        font-size: 12px;
     }
 }

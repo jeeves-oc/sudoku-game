@@ -114,6 +114,8 @@ class SudokuGame {
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.maxLength = 1;
+                input.inputMode = 'numeric';
+                input.pattern = '[1-9]';
                 input.dataset.row = row;
                 input.dataset.col = col;
                 
@@ -134,9 +136,13 @@ class SudokuGame {
 
     handleInput(e) {
         const value = e.target.value;
+        // Only allow single digits 1-9
         if (value && !/^[1-9]$/.test(value)) {
             e.target.value = '';
+            return;
         }
+        // Prevent any non-numeric input
+        e.target.value = value.replace(/[^1-9]/g, '');
     }
 
     handleKeydown(e) {
