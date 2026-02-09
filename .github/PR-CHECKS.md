@@ -2,7 +2,7 @@
 
 ## Enabled Free Checks
 
-### 1. **Super-Linter** 
+### 1. **Super-Linter**
 Multi-language linter that checks:
 - JavaScript/ES6
 - JSON
@@ -16,13 +16,7 @@ GitHub's free security scanner that:
 - Runs on every PR and weekly
 - Creates security alerts in the Security tab
 
-### 3. **Dependency Review**
-Checks for:
-- Vulnerable dependencies
-- License compliance issues
-- Fails on moderate+ severity vulnerabilities
-
-### 4. **PR Size Labeler**
+### 3. **PR Size Labeler**
 Auto-labels PRs by size:
 - `size/xs` (0-10 lines)
 - `size/s` (11-100 lines)
@@ -30,10 +24,10 @@ Auto-labels PRs by size:
 - `size/l` (501-1000 lines)
 - `size/xl` (1000+ lines)
 
-### 5. **PR Description Enforcer**
+### 4. **PR Description Enforcer**
 Requires meaningful PR descriptions (min 20 chars)
 
-### 6. **Code Owners Review**
+### 5. **Code Owners Review**
 Automatically requests review from @theadmin
 
 ## GitHub Settings Required
@@ -43,7 +37,6 @@ To fully enable PR protection, configure these in GitHub:
    - ✅ Require pull request reviews (1 approval)
    - ✅ Require status checks to pass:
      - `Lint Code Base`
-     - `Dependency Review`
      - `Check PR Description`
      - `Analyze Code` (CodeQL)
    - ✅ Require conversation resolution
