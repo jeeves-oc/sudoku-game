@@ -42,6 +42,8 @@ npm run test:ui       # Run tests in interactive mode
 ### CI/CD
 - All commits to `main` trigger automated Playwright tests via GitHub Actions
 - Branch protection requires passing tests before merge
+- Each merged PR to `main` auto-increments the build version (`x.x.[build]`) in `package.json` and `package-lock.json`
+- Deployed footer metadata always uses the current package version plus build timestamp and commit SHA
 - Tests verify:
   - Grid rendering (4x4 and 9x9)
   - Input validation
