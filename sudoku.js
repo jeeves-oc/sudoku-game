@@ -10,7 +10,6 @@ class SudokuGame {
 
     init() {
         document.getElementById('newGame').addEventListener('click', () => this.newGame());
-        document.getElementById('checkSolution').addEventListener('click', () => this.checkSolution());
         document.getElementById('solve').addEventListener('click', () => this.showSolution());
         document.getElementById('difficulty').addEventListener('change', (e) => {
             this.difficulty = e.target.value;
@@ -20,7 +19,6 @@ class SudokuGame {
     }
 
     newGame() {
-        // Set grid size based on difficulty
         if (this.difficulty === 'supereasy') {
             this.size = 4;
             this.boxSize = 2;
@@ -28,7 +26,7 @@ class SudokuGame {
             this.size = 9;
             this.boxSize = 3;
         }
-        
+
         this.generateSudoku();
         this.renderBoard();
         this.updateInfoText();
@@ -48,30 +46,26 @@ class SudokuGame {
     }
 
     generateSudoku() {
-        // Create a solved sudoku
         this.board = Array(this.size).fill(null).map(() => Array(this.size).fill(0));
         this.fillBoard(0, 0);
-        
-        // Store the solution
         this.solution = this.board.map(row => [...row]);
-        
-        // Remove numbers based on difficulty
+
         const cellsToRemove = {
             'supereasy': 6,
             'easy': 35,
             'medium': 45,
             'hard': 55
         }[this.difficulty];
-        
+
         this.removeNumbers(cellsToRemove);
     }
 
     fillBoard(row, col) {
         if (row === this.size) return true;
         if (col === this.size) return this.fillBoard(row + 1, 0);
-        
-        const numbers = this.shuffle(Array.from({length: this.size}, (_, i) => i + 1));
-        
+
+        const numbers = this.shuffle(Array.from({ length: this.size }, (_, i) => i + 1));
+
         for (let num of numbers) {
             if (this.isValid(row, col, num)) {
                 this.board[row][col] = num;
@@ -79,22 +73,19 @@ class SudokuGame {
                 this.board[row][col] = 0;
             }
         }
-        
+
         return false;
     }
 
     isValid(row, col, num) {
-        // Check row
         for (let x = 0; x < this.size; x++) {
             if (this.board[row][x] === num) return false;
         }
-        
-        // Check column
+
         for (let x = 0; x < this.size; x++) {
             if (this.board[x][col] === num) return false;
         }
-        
-        // Check box
+
         const startRow = row - row % this.boxSize;
         const startCol = col - col % this.boxSize;
         for (let i = 0; i < this.boxSize; i++) {
@@ -102,7 +93,7 @@ class SudokuGame {
                 if (this.board[i + startRow][j + startCol] === num) return false;
             }
         }
-        
+
         return true;
     }
 
@@ -131,20 +122,20 @@ class SudokuGame {
         const boardElement = document.getElementById('sudoku-board');
         boardElement.innerHTML = '';
         boardElement.style.gridTemplateColumns = `repeat(${this.size}, 1fr)`;
-        
+        boardElement.style.setProperty('--cell-font-size', this.size === 4 ? 'clamp(30px, 7vw, 44px)' : 'clamp(20px, 3.6vw, 30px)');
+
         for (let row = 0; row < this.size; row++) {
             for (let col = 0; col < this.size; col++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
-                
-                // Add box border classes
+
                 if ((col + 1) % this.boxSize === 0 && col !== this.size - 1) {
                     cell.classList.add('box-right');
                 }
                 if ((row + 1) % this.boxSize === 0 && row !== this.size - 1) {
                     cell.classList.add('box-bottom');
                 }
-                
+
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.maxLength = 1;
@@ -152,16 +143,16 @@ class SudokuGame {
                 input.pattern = `[1-${this.size}]`;
                 input.dataset.row = row;
                 input.dataset.col = col;
-                
+
                 if (this.board[row][col] !== 0) {
                     input.value = this.board[row][col];
                     input.disabled = true;
                     cell.classList.add('fixed');
                 }
-                
+
                 input.addEventListener('input', (e) => this.handleInput(e));
                 input.addEventListener('keydown', (e) => this.handleKeydown(e));
-                
+
                 cell.appendChild(input);
                 boardElement.appendChild(cell);
             }
@@ -170,23 +161,69 @@ class SudokuGame {
 
     handleInput(e) {
         const value = e.target.value;
-        // Only allow valid digits for current grid size
         const validPattern = new RegExp(`^[1-${this.size}]$`);
         if (value && !validPattern.test(value)) {
             e.target.value = '';
+            this.updateBoardValidationState();
             return;
         }
+
         e.target.value = value.replace(new RegExp(`[^1-${this.size}]`, 'g'), '');
+        this.updateBoardValidationState();
+    }
+
+    updateBoardValidationState() {
+        const editableInputs = document.querySelectorAll('.cell input:not([disabled])');
+        let isComplete = true;
+        let hasErrors = false;
+
+        editableInputs.forEach(input => {
+            const row = parseInt(input.dataset.row, 10);
+            const col = parseInt(input.dataset.col, 10);
+            const value = parseInt(input.value, 10);
+
+            input.parentElement.classList.remove('error');
+
+            if (!value) {
+                isComplete = false;
+                return;
+            }
+
+            if (value !== this.solution[row][col]) {
+                input.parentElement.classList.add('error');
+                hasErrors = true;
+            }
+        });
+
+        if (!isComplete) {
+            this.showMessage('', '');
+            return;
+        }
+
+        if (hasErrors) {
+            this.showMessage('Some cells are incorrect. Wrong entries are highlighted in red.', 'error');
+            return;
+        }
+
+        this.celebrateSolvedBoard();
+    }
+
+    celebrateSolvedBoard() {
+        const boardElement = document.getElementById('sudoku-board');
+        boardElement.classList.remove('celebrate');
+        void boardElement.offsetWidth;
+        boardElement.classList.add('celebrate');
+        this.showMessage('🎉 Perfect! Puzzle complete.', 'success');
     }
 
     handleKeydown(e) {
-        const row = parseInt(e.target.dataset.row);
-        const col = parseInt(e.target.dataset.col);
-        
+        const row = parseInt(e.target.dataset.row, 10);
+        const col = parseInt(e.target.dataset.col, 10);
+
         let newRow = row;
         let newCol = col;
-        
-        switch(e.key) {
+
+        switch (e.key) {
             case 'ArrowUp':
                 newRow = Math.max(0, row - 1);
                 e.preventDefault();
@@ -206,56 +243,24 @@ class SudokuGame {
             default:
                 return;
         }
-        
+
         const inputs = document.querySelectorAll('.cell input');
-        const targetInput = Array.from(inputs).find(input => 
-            input.dataset.row == newRow && input.dataset.col == newCol
+        const targetInput = Array.from(inputs).find(input =>
+            parseInt(input.dataset.row, 10) === newRow && parseInt(input.dataset.col, 10) === newCol
         );
-        
+
         if (targetInput) {
             targetInput.focus();
-        }
-    }
-
-    checkSolution() {
-        const inputs = document.querySelectorAll('.cell input:not([disabled])');
-        let isComplete = true;
-        let hasErrors = false;
-        
-        // Clear previous error states
-        document.querySelectorAll('.cell').forEach(cell => cell.classList.remove('error'));
-        
-        inputs.forEach(input => {
-            const row = parseInt(input.dataset.row);
-            const col = parseInt(input.dataset.col);
-            const value = parseInt(input.value);
-            
-            if (!value) {
-                isComplete = false;
-                return;
-            }
-            
-            if (value !== this.solution[row][col]) {
-                input.parentElement.classList.add('error');
-                hasErrors = true;
-            }
-        });
-        
-        if (!isComplete) {
-            this.showMessage('Puzzle is not complete yet!', 'error');
-        } else if (hasErrors) {
-            this.showMessage('Some cells are incorrect. Try again!', 'error');
-        } else {
-            this.showMessage('🎉 Congratulations! You solved it!', 'success');
         }
     }
 
     showSolution() {
         const inputs = document.querySelectorAll('.cell input');
         inputs.forEach(input => {
-            const row = parseInt(input.dataset.row);
-            const col = parseInt(input.dataset.col);
+            const row = parseInt(input.dataset.row, 10);
+            const col = parseInt(input.dataset.col, 10);
             input.value = this.solution[row][col];
+            input.parentElement.classList.remove('error');
         });
         this.showMessage('Solution revealed!', 'success');
     }
@@ -267,5 +272,4 @@ class SudokuGame {
     }
 }
 
-// Initialize the game
 new SudokuGame();
