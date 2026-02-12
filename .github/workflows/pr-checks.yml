@@ -25,6 +25,26 @@ jobs:
           VALIDATE_MARKDOWN: true
           VALIDATE_YAML: true
 
+  footer-metadata-validation:
+    name: Footer Metadata Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Render build footer and validate artifact
+        run: |
+          VERSION="$(node -p "require('./package.json').version")"
+          BUILD_TIMESTAMP="2026-01-01T00:00:00Z"
+          SHORT_SHA="abcdef1"
+          FOOTER_TEXT="v${VERSION} • Built: ${BUILD_TIMESTAMP} • ${SHORT_SHA}"
+
+          sed -i "s|__BUILD_METADATA__|${FOOTER_TEXT}|g" index.html
+
+          ! grep -q '__BUILD_METADATA__' index.html
+          grep -q "$SHORT_SHA" index.html
+          grep -q 'Built:' index.html
+
   pr-size-labeler:
     name: PR Size Label
     runs-on: ubuntu-latest

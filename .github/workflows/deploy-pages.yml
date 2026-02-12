@@ -26,6 +26,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Inject build metadata into footer
+        id: metadata
+        run: |
+          VERSION="$(node -p "require('./package.json').version")"
+          BUILD_TIMESTAMP="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          SHORT_SHA="${GITHUB_SHA::7}"
+          FOOTER_TEXT="v${VERSION} • Built: ${BUILD_TIMESTAMP} • ${SHORT_SHA}"
+
+          sed -i "s|__BUILD_METADATA__|${FOOTER_TEXT}|g" index.html
+
+          echo "footer=${FOOTER_TEXT}" >> "$GITHUB_OUTPUT"
+          echo "expected_sha=${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Validate footer metadata in build artifact
+        run: |
+          ! grep -q '__BUILD_METADATA__' index.html
+          grep -q "${{ steps.metadata.outputs.expected_sha }}" index.html
+          grep -q 'Built:' index.html
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
@@ -37,3 +56,14 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Verify deployed footer metadata
+        run: |
+          PAGE_URL="${{ steps.deployment.outputs.page_url }}"
+          EXPECTED="${{ steps.metadata.outputs.footer }}"
+
+          for i in {1..10}; do
+            HTML="$(curl -fsSL "$PAGE_URL")" && break || sleep 10
+          done
+
+          echo "$HTML" | grep -F "$EXPECTED"

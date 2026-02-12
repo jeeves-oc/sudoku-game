@@ -24,6 +24,15 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps chromium
       
+    - name: Inject build metadata for test run
+      run: |
+        VERSION="$(node -p "require('./package.json').version")"
+        BUILD_TIMESTAMP="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+        SHORT_SHA="${GITHUB_SHA::7}"
+        FOOTER_TEXT="v${VERSION} • Built: ${BUILD_TIMESTAMP} • ${SHORT_SHA}"
+
+        sed -i "s|__BUILD_METADATA__|${FOOTER_TEXT}|g" index.html
+
     - name: Run Playwright tests
       run: npm test
       
