@@ -1,0 +1,45 @@
+name: Bump build version
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bump-build-version-main
+  cancel-in-progress: false
+
+jobs:
+  bump-build:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump patch/build version
+        run: |
+          CURRENT_VERSION="$(node -p "require('./package.json').version")"
+          IFS='.' read -r MAJOR MINOR BUILD <<< "$CURRENT_VERSION"
+          NEXT_BUILD=$((BUILD + 1))
+          NEXT_VERSION="${MAJOR}.${MINOR}.${NEXT_BUILD}"
+
+          npm version "$NEXT_VERSION" --no-git-tag-version
+
+          git add package.json package-lock.json
+          git commit -m "chore(release): bump build version to v${NEXT_VERSION}" || exit 0
+
+      - name: Push version bump
+        run: git push
